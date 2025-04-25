@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.serialization)
+
 }
 
 android {
@@ -56,4 +58,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
+    implementation(libs.core.splashscreen)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+
+
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
 }

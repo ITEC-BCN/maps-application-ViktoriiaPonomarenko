@@ -11,37 +11,30 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.mapsapp.ui.navigation.MainNavigationWrapper
+import com.example.mapsapp.ui.screens.DrawerScreen
+import com.example.mapsapp.ui.screens.PermissionsScreen
 import com.example.mapsapp.ui.theme.MapsAppTheme
+import kotlin.time.TimeSource
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Instala la pantalla de splash y la mantiene visible durante 3 segundos
+        val splash = installSplashScreen()
+        val now = TimeSource.Monotonic.markNow()
+        splash.setKeepOnScreenCondition { now.elapsedNow().inWholeMilliseconds < 3000 }
+
+
         enableEdgeToEdge()
         setContent {
             MapsAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainNavigationWrapper()
+
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MapsAppTheme {
-        Greeting("Android")
-    }
-}

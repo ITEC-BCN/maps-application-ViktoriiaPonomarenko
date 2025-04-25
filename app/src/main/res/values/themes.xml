@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.MapsApp" parent="android:Theme.Material.Light.NoActionBar" />
+
+
+    <style name="Theme.MySplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.MapsApp</item>
+    </style>
+
 </resources>
