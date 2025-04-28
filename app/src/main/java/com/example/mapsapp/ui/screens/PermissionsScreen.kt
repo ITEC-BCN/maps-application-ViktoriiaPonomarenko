@@ -84,8 +84,6 @@ fun PermissionsScreen(navigateToDrower : () -> Unit){
             }
 
 
-
-
             val status = permissionsStatus[permission]
             val label = when (status) {
                 null -> "Requesting..."

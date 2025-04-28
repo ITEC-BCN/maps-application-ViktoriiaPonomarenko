@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Maps App"
 include(":app")
- 
+
+

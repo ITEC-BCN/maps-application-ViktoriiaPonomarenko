@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.ui.navigation.DrawerItem
 import com.example.mapsapp.ui.navigation.InternalNavigationWrapper
-import com.example.mapsapp.ui.navigation.MainNavigationWrapper
+//import com.example.mapsapp.ui.navigation.InternalNavigationWrapper
 import kotlinx.coroutines.launch
 
 
@@ -65,8 +65,9 @@ fun DrawerScreen() {
                     }
                 )
             }
-        ) { innerPadding ->
-            InternalNavigationWrapper()
+        )
+        { innerPadding ->
+            InternalNavigationWrapper(navController, Modifier.padding(innerPadding))
         }
 
     }
