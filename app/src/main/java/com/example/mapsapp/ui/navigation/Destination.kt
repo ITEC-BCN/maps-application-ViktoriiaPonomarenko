@@ -1,5 +1,6 @@
 package com.example.mapsapp.ui.navigation
 
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.serialization.Serializable
 
 sealed class Destination {

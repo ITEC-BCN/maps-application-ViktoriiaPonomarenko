@@ -35,6 +35,7 @@ fun DrawerScreen() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var selectedItemIndex by remember { mutableStateOf(0) }
+
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
@@ -52,7 +53,8 @@ fun DrawerScreen() {
                 }
             }
         },
-        drawerState = drawerState
+        drawerState = drawerState,
+        gesturesEnabled = false
     ){
         Scaffold(
             topBar = {
@@ -67,9 +69,14 @@ fun DrawerScreen() {
             }
         )
         { innerPadding ->
-            InternalNavigationWrapper(navController, Modifier.padding(innerPadding))
+            InternalNavigationWrapper(navController = navController, padding = Modifier.padding(innerPadding))
         }
 
     }
 
 }
+
+
+
+
+

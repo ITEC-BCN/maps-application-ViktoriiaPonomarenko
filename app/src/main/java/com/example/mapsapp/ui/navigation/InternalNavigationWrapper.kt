@@ -5,23 +5,21 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.mapsapp.ui.navigation.Destination.Map
 import com.example.mapsapp.ui.screens.MapScreen
+import com.example.mapsapp.ui.screens.MarkerListScreen
+
 
 @Composable
-fun InternalNavigationWrapper(navController1: NavHostController, padding: Modifier) {
-    val navController = rememberNavController()
-    NavHost(navController, Map){
-
-        composable<Map> {
+fun InternalNavigationWrapper(navController: NavHostController, padding: Modifier) {
+    NavHost(navController, Destination.Map){
+        composable<Destination.Map> {
             MapScreen()
         }
 
-//        composable<List> {
-//            MarkerListScreen()
-//        }
-
+        composable<Destination.List> {
+            MarkerListScreen()
+        }
 
     }
+
 }
