@@ -1,5 +1,6 @@
 package com.example.mapsapp.data
 
+import com.google.android.gms.maps.model.LatLng
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -35,10 +36,12 @@ class MySupabaseClient() {
     suspend fun insertMarcador(marcador: Marcador){
         client.from("Marcador").insert(marcador)
     }
-    suspend fun upda  teMarcador(id: String, name: String, mark: Double){
+    suspend fun updateMarcador(id: String, titulo: String, descripcion: String, foto: String, coordenadas: LatLng){
         client.from("Marcador").update({
-            set("name", name)
-            set("mark", mark)
+            set("titulo", titulo)
+            set("descripcion", descripcion)
+            set("foto", foto)
+            set("coordenadas", coordenadas)
         }) { filter { eq("id", id) } }
     }
     suspend fun deleteMarcador(id: String){
