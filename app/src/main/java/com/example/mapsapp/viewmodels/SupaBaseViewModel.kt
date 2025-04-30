@@ -18,60 +18,68 @@ class SupaBaseViewModel: ViewModel() {
 
     private var _selectedMarcador: Marcador? = null
 
-    private val _marcadorTitle = MutableLiveData<String>()
-    val marcadorTitle = _marcadorTitle
+    private val _marcadorTitulo = MutableLiveData<String>()
+    val marcadorTitulo = _marcadorTitulo
 
     private val _marcadorDescripcion = MutableLiveData<String>()
     val marcadorDescripcion = _marcadorDescripcion
+
+    private val _marcadorFoto = MutableLiveData<String>()
+    val marcadorFoto = _marcadorFoto
 
     fun getAllMarcadores() {
         CoroutineScope(Dispatchers.IO).launch {
             val databaseMarcador = database.getAllMarcadores()
             withContext(Dispatchers.Main) {
-                _marcadorList.value = databaseStudents
+                _marcadorList.value = databaseMarcador
             }
         }
     }
 
-    fun insertNewStudent(name: String, mark: String) {
-        val newStudent = Marcador(name = name, mark = mark.toDouble())
+    fun insertNewMarcador(titulo: String, descripcion: String, foto: String, coordenadas: Int) {
+        val newMarcador = Marcador(titulo = titulo, descripcion = descripcion, foto = foto, coordenadas =coordenadas)
         CoroutineScope(Dispatchers.IO).launch {
-            database.insertStudent(newStudent)
+            database.insertMarcador(newMarcador)
             getAllMarcadores()
         }
     }
 
-    fun updateStudent(id: String, name: String, mark: String){
+    fun updateMarcador(id: String, titulo: String, descripcion: String, foto: String){
         CoroutineScope(Dispatchers.IO).launch {
-            database.updateStudent(id, name, mark.toDouble())
+            database.updateMarcador(id, titulo, descripcion, foto)
         }
     }
 
-    fun deleteStudent(id: String){
+    fun deleteMarcador(id: String){
         CoroutineScope(Dispatchers.IO).launch {
-            database.deleteStudent(id)
-            getAllStudents()
+            database.deleteMarcador(id)
+            getAllMarcadores()
         }
     }
 
-    fun getStudent(id: String){
-        if(_selectedStudent == null){
+    fun getMarcador(id: String){
+        if(_selectedMarcador == null){
             CoroutineScope(Dispatchers.IO).launch {
-                val student = database.getStudent(id)
+                val marcador = database.getMarcador(id)
                 withContext(Dispatchers.Main) {
-                    _selectedStudent = student
-                    _studentName.value = student.name
-                    _studentMark.value = student.mark.toString()
+                    _selectedMarcador = marcador
+                    _marcadorTitulo.value = marcador.titulo
+                    _marcadorDescripcion.value = marcador.descripcion
+                    _marcadorFoto.value = marcador.foto
                 }
             }
         }
     }
 
-    fun editStudentName(name: String) {
-        _studentName.value = name
+    fun editMarcadorTitulo(titulo: String) {
+        _marcadorTitulo.value = titulo
     }
 
-    fun editStudentMark(mark: String) {
-        _studentMark.value = mark
+    fun editMarcadorDescripcion(descripcion: String) {
+        _marcadorDescripcion.value = descripcion
+    }
+
+    fun editMarcadorFoto(foto: String) {
+        _marcadorFoto.value = foto
     }
 }

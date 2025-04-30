@@ -21,7 +21,7 @@ class MySupabaseClient() {
 
     //SQL operations
 
-    suspend fun getAllMarcadors(): List<Marcador> {
+    suspend fun getAllMarcadores(): List<Marcador> {
         return client.from("Marcador").select().decodeList<Marcador>()
     }
 
@@ -36,12 +36,11 @@ class MySupabaseClient() {
     suspend fun insertMarcador(marcador: Marcador){
         client.from("Marcador").insert(marcador)
     }
-    suspend fun updateMarcador(id: String, titulo: String, descripcion: String, foto: String, coordenadas: LatLng){
+    suspend fun updateMarcador(id: String, titulo: String, descripcion: String, foto: String){
         client.from("Marcador").update({
             set("titulo", titulo)
             set("descripcion", descripcion)
             set("foto", foto)
-            set("coordenadas", coordenadas)
         }) { filter { eq("id", id) } }
     }
     suspend fun deleteMarcador(id: String){

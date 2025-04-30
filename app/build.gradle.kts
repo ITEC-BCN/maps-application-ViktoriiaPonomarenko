@@ -71,6 +71,9 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.ktor:ktor-client-android:3.1.2")
 
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+
+
 }
 secrets {
     propertiesFileName = "secrets.properties"
