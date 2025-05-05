@@ -1,6 +1,5 @@
 package com.example.mapsapp.ui.navigation
 
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.serialization.Serializable
 
 sealed class Destination {
@@ -17,10 +16,10 @@ sealed class Destination {
     @Serializable
     object List: Destination()
 
-//    @Serializable
-//    data class MarkerCreation(val coordenada: LatLng)
+    @Serializable
+    data class MarkerCreation(val latitude: Double, val longitude: Double)
 
     @Serializable
-    data class MarkerDatails(val id:Int)
+    data class MarkerDatails(val id: String)
 
 }

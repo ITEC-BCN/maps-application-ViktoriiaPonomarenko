@@ -2,22 +2,17 @@ package com.example.mapsapp.ui.screens
 
 
 
-//@Composable
-//fun MarkerListScreen() {
-//    Text("list marker")
-//}
-
-
-
-import android.R.attr.id
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -34,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,29 +40,17 @@ import com.example.mapsapp.viewmodels.SupaBaseViewModel
 
 @Composable
 fun MarkerListScreen(navigateToDetail: (String) -> Unit) {
-    val myViewModel = viewModel< SupaBaseViewModel>()
+    val myViewModel = viewModel<SupaBaseViewModel>()
     val marcadorList by myViewModel.marcadorList.observeAsState(emptyList<Marcador>())
     myViewModel.getAllMarcadores()
     val marcadorTitulo: String by myViewModel.marcadorTitulo.observeAsState("")
-//    Column(
-//        Modifier.fillMaxSize()
-//    ) {
-//        Column(
-//            Modifier
-//                .fillMaxWidth()
-//                .weight(0.4f),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
-//        ) {
-//            Text("Create new student", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-//            TextField(value = studentName, onValueChange = { myViewModel.editMarcadorTitulo(it) })
-//            TextField(value = studentMark, onValueChange = { myViewModel.editStudentMark(it) })
-//            Button(onClick = { myViewModel.insertNewStudent(studentName, studentMark) }) {
-//                Text("Insert")
-//            }
-//        }
+
+    Spacer(modifier = Modifier.height(200.dp))
+    Column(
+        Modifier.fillMaxSize()
+    ) {
         Text(
-            "Students List",
+            "Marker List",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth(),
@@ -77,7 +59,7 @@ fun MarkerListScreen(navigateToDetail: (String) -> Unit) {
         LazyColumn(
             Modifier
                 .fillMaxWidth()
-             //   .weight(0.6f)
+            //   .weight(0.6f)
         ) {
             items(marcadorList) { marcador ->
                 val dissmissState = rememberSwipeToDismissBoxState(
@@ -106,6 +88,7 @@ fun MarkerListScreen(navigateToDetail: (String) -> Unit) {
             }
         }
     }
+}
 
 
 @Composable

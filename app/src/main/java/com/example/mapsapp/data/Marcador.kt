@@ -9,5 +9,6 @@ data class Marcador(
     val titulo: String,
     val descripcion: String,
     val foto: String,
-    val coordenadas: Int
+    val latitud: Double,
+    val longitud: Double
 )

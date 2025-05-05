@@ -36,8 +36,8 @@ class SupaBaseViewModel: ViewModel() {
         }
     }
 
-    fun insertNewMarcador(titulo: String, descripcion: String, foto: String, coordenadas: Int) {
-        val newMarcador = Marcador(titulo = titulo, descripcion = descripcion, foto = foto, coordenadas =coordenadas)
+    fun insertNewMarcador(titulo: String, descripcion: String, foto: String, latitud: Double, longitud: Double) {
+        val newMarcador = Marcador(titulo = titulo, descripcion = descripcion, foto = foto, latitud = latitud, longitud = longitud)
         CoroutineScope(Dispatchers.IO).launch {
             database.insertMarcador(newMarcador)
             getAllMarcadores()
