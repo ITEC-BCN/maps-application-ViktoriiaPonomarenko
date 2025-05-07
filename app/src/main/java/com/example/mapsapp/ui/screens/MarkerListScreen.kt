@@ -45,10 +45,11 @@ fun MarkerListScreen(navigateToDetail: (String) -> Unit) {
     myViewModel.getAllMarcadores()
     val marcadorTitulo: String by myViewModel.marcadorTitulo.observeAsState("")
 
-    Spacer(modifier = Modifier.height(200.dp))
+
     Column(
         Modifier.fillMaxSize()
     ) {
+        Spacer(modifier = Modifier.height(100.dp))
         Text(
             "Marker List",
             fontSize = 28.sp,
@@ -59,9 +60,8 @@ fun MarkerListScreen(navigateToDetail: (String) -> Unit) {
         LazyColumn(
             Modifier
                 .fillMaxWidth()
-            //   .weight(0.6f)
         ) {
-            items(marcadorList) { marcador ->
+            items(items = marcadorList, key = { it.id!! }) { marcador ->
                 val dissmissState = rememberSwipeToDismissBoxState(
                     confirmValueChange = {
                         if (it == SwipeToDismissBoxValue.EndToStart) {

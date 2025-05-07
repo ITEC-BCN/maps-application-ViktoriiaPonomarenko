@@ -27,6 +27,12 @@ class SupaBaseViewModel: ViewModel() {
     private val _marcadorFoto = MutableLiveData<String>()
     val marcadorFoto = _marcadorFoto
 
+    private val _marcadorLatitud = MutableLiveData<String>()
+    val marcadorLatitud = _marcadorLatitud
+
+    private val _marcadorLongitud = MutableLiveData<String>()
+    val marcadorLongitud = _marcadorLongitud
+
     fun getAllMarcadores() {
         CoroutineScope(Dispatchers.IO).launch {
             val databaseMarcador = database.getAllMarcadores()
@@ -66,6 +72,8 @@ class SupaBaseViewModel: ViewModel() {
                     _marcadorTitulo.value = marcador.titulo
                     _marcadorDescripcion.value = marcador.descripcion
                     _marcadorFoto.value = marcador.foto
+                    _marcadorLatitud.value = marcador.latitud.toString()
+                    _marcadorLongitud.value = marcador.longitud.toString()
                 }
             }
         }

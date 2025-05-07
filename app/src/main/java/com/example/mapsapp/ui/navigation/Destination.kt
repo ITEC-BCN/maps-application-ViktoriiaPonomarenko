@@ -22,4 +22,5 @@ sealed class Destination {
     @Serializable
     data class MarkerDatails(val id: String)
 
+
 }

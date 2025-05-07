@@ -26,7 +26,7 @@ class MySupabaseClient() {
     }
 
     suspend fun getMarcador(id: String): Marcador{
-        return client.from("Student").select {
+        return client.from("Marcador").select {
             filter {
                 eq("id", id)
             }
