@@ -1,22 +1,60 @@
 package com.example.mapsapp.data
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.example.mapsapp.BuildConfig
 import com.google.android.gms.maps.model.LatLng
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.storage.Storage
+import io.github.jan.supabase.storage.storage
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
-class MySupabaseClient() {
+class MySupabaseClient {
+    private val supabaseUrl = BuildConfig.SUPABASE_URL
+    private val supabaseKey = BuildConfig.SUPABASE_KEY
     lateinit var client: SupabaseClient
-    constructor(supabaseUrl: String, supabaseKey: String): this(){
-        client = createSupabaseClient(
-            supabaseUrl = supabaseUrl,
-            supabaseKey = supabaseKey
-        ) {
+    lateinit var storage: Storage
+
+
+    constructor() {
+        client = createSupabaseClient(supabaseUrl = supabaseUrl, supabaseKey = supabaseKey) {
             install(Postgrest)
+            install(Storage)
+        }
+        storage = client.storage
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun uploadImage(imageFile: ByteArray): String {
+        val fechaHoraActual = LocalDateTime.now()
+        val formato = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")
+        val imageName = storage.from("images").upload(path = "image_${fechaHoraActual.format(formato)}.png", data = imageFile)
+        return buildImageUrl(imageFileName = imageName.path)
+    }
+
+    fun buildImageUrl(imageFileName: String) = "${this.supabaseUrl}/storage/v1/object/public/images/${imageFileName}"
+
+
+    suspend fun updateMarcador(id: String, titulo: String, descripcion: String, imageName: String, imageFile: ByteArray) {
+        val imageName = storage.from("images").update(path = imageName, data = imageFile)
+        client.from("Marcador").update({
+            set("titulo", titulo)
+            set("descripcion", descripcion)
+            set("foto", buildImageUrl(imageFileName = imageName.path))
+        }) {
+            filter {
+                eq("id", id)
+            }
         }
     }
+
+
 
 
     //SQL operations
@@ -36,13 +74,13 @@ class MySupabaseClient() {
     suspend fun insertMarcador(marcador: Marcador){
         client.from("Marcador").insert(marcador)
     }
-    suspend fun updateMarcador(id: String, titulo: String, descripcion: String, foto: String){
-        client.from("Marcador").update({
-            set("titulo", titulo)
-            set("descripcion", descripcion)
-            set("foto", foto)
-        }) { filter { eq("id", id) } }
-    }
+//    suspend fun updateMarcador(id: String, titulo: String, descripcion: String, foto: String){
+//        client.from("Marcador").update({
+//            set("titulo", titulo)
+//            set("descripcion", descripcion)
+//            set("foto", foto)
+//        }) { filter { eq("id", id) } }
+//    }
     suspend fun deleteMarcador(id: String){
         client.from("Marcador").delete{ filter { eq("id", id) } }
     }

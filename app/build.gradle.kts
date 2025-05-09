@@ -1,3 +1,12 @@
+import java.util.Properties
+
+
+val localPropsFile = rootProject.file("local.properties")
+val localProps = Properties().apply {
+    if (localPropsFile.exists()) {
+        load(localPropsFile.inputStream())
+    }
+}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,6 +28,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            type = "String",
+            name = "SUPABASE_URL",
+            value = "\"${localProps.getProperty("supabaseUrl") ?: ""}\""
+        )
+        buildConfigField(
+            type = "String",
+            name = "SUPABASE_KEY",
+            value = "\"${localProps.getProperty("supabaseKey") ?: ""}\""
+        )
+
     }
 
     buildTypes {
@@ -39,8 +60,12 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+
     }
 }
+
+
 
 dependencies {
 
@@ -73,6 +98,8 @@ dependencies {
 
     implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
 
+    implementation("io.github.jan-tennert.supabase:storage-kt:$3.1.4")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
 }
 secrets {
