@@ -41,19 +41,15 @@ class MySupabaseClient {
     fun buildImageUrl(imageFileName: String) = "${this.supabaseUrl}/storage/v1/object/public/images/${imageFileName}"
 
 
-    suspend fun updateMarcador(id: String, titulo: String, descripcion: String, imageName: String, imageFile: ByteArray) {
-        val imageName = storage.from("images").update(path = imageName, data = imageFile)
+    suspend fun updateMarcador(id: String, titulo: String, descripcion: String, fotoUrl: String) {
         client.from("Marcador").update({
             set("titulo", titulo)
             set("descripcion", descripcion)
-            set("foto", buildImageUrl(imageFileName = imageName.path))
+            set("foto", fotoUrl)
         }) {
-            filter {
-                eq("id", id)
-            }
+            filter { eq("id", id) }
         }
     }
-
 
 
 
@@ -74,13 +70,8 @@ class MySupabaseClient {
     suspend fun insertMarcador(marcador: Marcador){
         client.from("Marcador").insert(marcador)
     }
-//    suspend fun updateMarcador(id: String, titulo: String, descripcion: String, foto: String){
-//        client.from("Marcador").update({
-//            set("titulo", titulo)
-//            set("descripcion", descripcion)
-//            set("foto", foto)
-//        }) { filter { eq("id", id) } }
-//    }
+
+
     suspend fun deleteMarcador(id: String){
         client.from("Marcador").delete{ filter { eq("id", id) } }
     }

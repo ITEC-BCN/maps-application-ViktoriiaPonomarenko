@@ -22,15 +22,15 @@ class SupaBaseViewModel: ViewModel() {
 
     private val _selectedMarcador = MutableLiveData<String>()
     val selectedMarcador = _selectedMarcador
-    
-    
+
+
     private val _marcadorTitulo = MutableLiveData<String>()
     val marcadorTitulo = _marcadorTitulo
 
     private val _marcadorDescripcion = MutableLiveData<String>()
     val marcadorDescripcion = _marcadorDescripcion
 
-    private val _marcadorFoto = MutableLiveData<String>()
+    private val _marcadorFoto = MutableLiveData<String?>()
     val marcadorFoto = _marcadorFoto
 
     private val _marcadorLatitud = MutableLiveData<String>()
@@ -38,6 +38,13 @@ class SupaBaseViewModel: ViewModel() {
 
     private val _marcadorLongitud = MutableLiveData<String>()
     val marcadorLongitud = _marcadorLongitud
+
+    private val _marcadorFotoBitmap = MutableLiveData<Bitmap?>()
+    val marcadorFotoBitmap = _marcadorFotoBitmap
+
+    fun editMarcadorFotoBitmap(bitmap: Bitmap) {
+        _marcadorFotoBitmap.postValue(bitmap)
+    }
 
     fun getAllMarcadores() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -59,20 +66,27 @@ class SupaBaseViewModel: ViewModel() {
         }
     }
 
-//    fun updateMarcador(id: String, titulo: String, descripcion: String, foto: String){
-//        CoroutineScope(Dispatchers.IO).launch {
-//            database.updateMarcador(id, titulo, descripcion, foto)
-//        }
-//    }
 
-//    fun updateMarcador(id: String, titulo: String, descripcion: String, foto: Bitmap?){
-//        val stream = ByteArrayOutputStream()
-//        foto?.compress(Bitmap.CompressFormat.PNG, 0, stream)
-//        val imageName = _selectedMarcador.value?.foto?.removePrefix("https://aobflzinjcljzqpxpcxs.supabase.co/storage/v1/object/public/images/")
-//        CoroutineScope(Dispatchers.IO).launch {
-//            database.updateMarcador(id, titulo, descripcion, imageName.toString(), stream.toByteArray())
-//        }
-//    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateMarcador(id: String, titulo: String, descripcion: String, fotoBitmap: Bitmap?) {
+        CoroutineScope(Dispatchers.IO).launch {
+            var fotoUrlActualizada = _marcadorFoto.value ?: ""
+
+            if (fotoBitmap != null) {
+                val stream = ByteArrayOutputStream()
+                fotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                val byteArray = stream.toByteArray()
+                val newImageUrl = database.uploadImage(byteArray)
+                fotoUrlActualizada = newImageUrl
+            }
+
+            database.updateMarcador(id, titulo, descripcion, fotoUrlActualizada)
+            getAllMarcadores()
+        }
+    }
+
+
 
 
     fun deleteMarcador(id: String){
@@ -82,12 +96,12 @@ class SupaBaseViewModel: ViewModel() {
         }
     }
 
-    fun getMarcador(id: String){
-        if(_selectedMarcador == null){
+    fun getMarcador(id: String) {
+        if (_selectedMarcador.value.isNullOrEmpty()) {
             CoroutineScope(Dispatchers.IO).launch {
                 val marcador = database.getMarcador(id)
                 withContext(Dispatchers.Main) {
-                    _selectedMarcador = marcador
+                    _selectedMarcador.value = id
                     _marcadorTitulo.value = marcador.titulo
                     _marcadorDescripcion.value = marcador.descripcion
                     _marcadorFoto.value = marcador.foto
@@ -97,6 +111,7 @@ class SupaBaseViewModel: ViewModel() {
             }
         }
     }
+
 
     fun editMarcadorTitulo(titulo: String) {
         _marcadorTitulo.value = titulo
@@ -109,4 +124,6 @@ class SupaBaseViewModel: ViewModel() {
     fun editMarcadorFoto(foto: String) {
         _marcadorFoto.value = foto
     }
+
+
 }

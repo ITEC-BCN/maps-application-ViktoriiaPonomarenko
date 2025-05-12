@@ -8,7 +8,7 @@ data class Marcador(
     val id: Int? = null,
     val titulo: String,
     val descripcion: String,
-    val foto: String,
+    val foto: String? = null,
     val latitud: Double,
     val longitud: Double
 )

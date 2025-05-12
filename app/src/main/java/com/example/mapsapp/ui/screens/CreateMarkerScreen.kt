@@ -48,7 +48,6 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
     val myViewModel = viewModel<SupaBaseViewModel>()
     var titulo by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
-    var fotoUrl by remember { mutableStateOf("") }
     var insertado by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -100,7 +99,7 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
                 val uri = createImageUri(context)
                 imageUri.value = uri
                 takePictureLauncher.launch(uri!!)
-                },
+            }
             ) {
                 Text("Tomar Foto")
             }
@@ -108,7 +107,7 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
             Button(
                 onClick = {
                     pickImageLauncher.launch("image/*")
-                },
+                }
             ) {
                 Text("Elegir de Galería")
             }
