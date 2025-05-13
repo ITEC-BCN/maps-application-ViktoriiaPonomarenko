@@ -18,7 +18,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import androidx.compose.runtime.livedata.observeAsState
-
+import com.example.mapsapp.ui.navigation.Destination.MarkerDatails
 
 
 @Composable
@@ -46,7 +46,10 @@ fun MapScreen(navController: NavController, modifier: Modifier = Modifier) {
             Marker(
                 state = MarkerState(position = LatLng(marcador.latitud, marcador.longitud)),
                 title = marcador.titulo,
-                snippet = marcador.descripcion
+                snippet = "More details",
+                onInfoWindowClick = {
+                    navController.navigate(MarkerDatails(marcador.id.toString()))
+                }
             )
         }
 
