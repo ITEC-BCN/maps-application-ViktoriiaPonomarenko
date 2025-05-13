@@ -54,17 +54,44 @@ class SupaBaseViewModel: ViewModel() {
             }
         }
     }
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    fun insertNewMarcador(titulo: String, descripcion: String, foto: Bitmap?, latitud: Double, longitud: Double) {
+//        val stream = ByteArrayOutputStream()
+//        foto?.compress(Bitmap.CompressFormat.PNG, 0, stream)
+//        CoroutineScope(Dispatchers.IO).launch {
+//
+//            val imageName = database.uploadImage(stream.toByteArray())
+//            val newMarcador = Marcador(titulo = titulo, descripcion = descripcion, foto = imageName, latitud = latitud, longitud = longitud)
+//            database.insertMarcador(newMarcador)
+//        }
+//    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun insertNewMarcador(titulo: String, descripcion: String, foto: Bitmap?, latitud: Double, longitud: Double) {
-        val stream = ByteArrayOutputStream()
-        foto?.compress(Bitmap.CompressFormat.PNG, 0, stream)
         CoroutineScope(Dispatchers.IO).launch {
+            // Si hay foto, súbela. Si no, usa string vacío.
+            val fotoUrl = if (foto != null) {
+                val stream = ByteArrayOutputStream()
+                foto.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                database.uploadImage(stream.toByteArray())
+            } else {
+                ""
+            }
 
-            val imageName = database.uploadImage(stream.toByteArray())
-            val newMarcador = Marcador(titulo = titulo, descripcion = descripcion, foto = imageName, latitud = latitud, longitud = longitud)
-            database.insertMarcador(newMarcador)
+            val nuevoMarcador = Marcador(
+                titulo = titulo,
+                descripcion = descripcion,
+                foto = fotoUrl,
+                latitud = latitud,
+                longitud = longitud
+            )
+
+            database.insertMarcador(nuevoMarcador)
+            getAllMarcadores() // opcional si quieres actualizar la lista
         }
     }
+
 
 
 

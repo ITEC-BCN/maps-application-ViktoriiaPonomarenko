@@ -116,14 +116,16 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
 
         Button(
             onClick = {
-                myViewModel.insertNewMarcador(
-                    titulo,
-                    descripcion,
-                    bitmap.value,
-                    latitude,
-                    longitude
-                )
-                insertado = true
+                if (titulo.isNotBlank()) {
+                    myViewModel.insertNewMarcador(
+                        titulo = titulo,
+                        descripcion = descripcion, // puede estar vacío
+                        foto = bitmap.value, // puede ser null
+                        latitud = latitude,
+                        longitud = longitude
+                    )
+                    insertado = true
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
