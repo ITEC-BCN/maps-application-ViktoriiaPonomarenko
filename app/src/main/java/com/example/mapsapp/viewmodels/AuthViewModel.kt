@@ -37,6 +37,7 @@ class AuthViewModel(private val sharedPreferences: SharedPreferencesHelper) : Vi
         checkExistingSession()
     }
 
+
     fun editEmail(value: String) {
         _email.value = value
     }
@@ -94,8 +95,6 @@ class AuthViewModel(private val sharedPreferences: SharedPreferencesHelper) : Vi
             _authState.value = AuthState.Unauthenticated
         }
     }
-
-
 
 
 }

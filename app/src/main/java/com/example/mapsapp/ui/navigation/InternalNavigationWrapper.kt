@@ -12,14 +12,17 @@ import com.example.mapsapp.ui.navigation.Destination.MarkerCreation
 import com.example.mapsapp.ui.navigation.Destination.MarkerDatails
 import com.example.mapsapp.ui.screens.CreateMarkerScreen
 import com.example.mapsapp.ui.screens.DetailMarkerScreen
+import com.example.mapsapp.ui.screens.LoginScreen
 import com.example.mapsapp.ui.screens.MapScreen
 import com.example.mapsapp.ui.screens.MarkerListScreen
+import com.example.mapsapp.ui.screens.RegistrScreen
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InternalNavigationWrapper(navController: NavHostController, padding: Modifier) {
     NavHost(navController, Destination.Map){
+
         composable<Destination.Map> {
             MapScreen(navController = navController)
         }
@@ -41,6 +44,7 @@ fun InternalNavigationWrapper(navController: NavHostController, padding: Modifie
             val args = backStackEntry.toRoute<MarkerCreation>()
             CreateMarkerScreen(latitude = args.latitude, longitude = args.longitude, navController = navController)
         }
+
 
     }
 

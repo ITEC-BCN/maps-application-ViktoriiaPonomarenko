@@ -22,5 +22,9 @@ sealed class Destination {
     @Serializable
     data class MarkerDatails(val id: String)
 
+    @Serializable object Login : Destination()
+
+    @Serializable object Register : Destination()
+
 
 }

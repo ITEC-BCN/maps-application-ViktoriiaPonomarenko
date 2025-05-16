@@ -2,6 +2,8 @@ package com.example.mapsapp.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
+
 
 class SharedPreferencesHelper(context: Context) {
     private val sharedPreferences: SharedPreferences =

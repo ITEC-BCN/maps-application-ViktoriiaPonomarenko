@@ -8,7 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.example.mapsapp.viewmodels.SupaBaseViewModel
 import com.example.mapsapp.ui.navigation.Destination.MarkerCreation
 import com.google.android.gms.maps.model.CameraPosition
@@ -18,11 +17,12 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.navigation.NavHostController
 import com.example.mapsapp.ui.navigation.Destination.MarkerDatails
 
 
 @Composable
-fun MapScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun MapScreen(navController: NavHostController, modifier: Modifier = Modifier) {
     val viewModel = viewModel<SupaBaseViewModel>()
     val marcadorList by viewModel.marcadorList.observeAsState(emptyList())
 
