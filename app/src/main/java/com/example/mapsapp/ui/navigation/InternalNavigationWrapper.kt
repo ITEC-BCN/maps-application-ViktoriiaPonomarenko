@@ -12,10 +12,8 @@ import com.example.mapsapp.ui.navigation.Destination.MarkerCreation
 import com.example.mapsapp.ui.navigation.Destination.MarkerDatails
 import com.example.mapsapp.ui.screens.CreateMarkerScreen
 import com.example.mapsapp.ui.screens.DetailMarkerScreen
-import com.example.mapsapp.ui.screens.LoginScreen
 import com.example.mapsapp.ui.screens.MapScreen
 import com.example.mapsapp.ui.screens.MarkerListScreen
-import com.example.mapsapp.ui.screens.RegistrScreen
 
 
 @RequiresApi(Build.VERSION_CODES.O)

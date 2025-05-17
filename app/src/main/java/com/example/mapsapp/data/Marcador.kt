@@ -10,5 +10,6 @@ data class Marcador(
     val descripcion: String,
     val foto: String? = null,
     val latitud: Double,
-    val longitud: Double
+    val longitud: Double,
+    val user_id: String = ""
 )

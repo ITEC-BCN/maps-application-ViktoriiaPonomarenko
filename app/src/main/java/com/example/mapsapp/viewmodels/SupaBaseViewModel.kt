@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.mapsapp.SupabaseApplication
 import com.example.mapsapp.data.Marcador
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +14,7 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 class SupaBaseViewModel(): ViewModel() {
-    val database = MyApp.database
+    val database = SupabaseApplication.supabase
 
     private val _marcadorList = MutableLiveData<List<Marcador>>()
     val marcadorList = _marcadorList

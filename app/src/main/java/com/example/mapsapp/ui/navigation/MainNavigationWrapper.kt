@@ -28,14 +28,19 @@ fun MainNavigationWrapper() {
             }
         }
         composable<Login> {
-            LoginScreen({ navController.navigate(Drawer) }, { navController.navigate(Register) })
+            LoginScreen(
+                { navController.navigate(Drawer) },
+                { navController.navigate(Register) }
+            )
         }
         composable<Register> {
             RegistrScreen { navController.navigate(Drawer) }
         }
 
         composable<Drawer> {
-            DrawerScreen()
+            DrawerScreen(){
+                navController.navigate(Login)
+            }
         }
     }
 

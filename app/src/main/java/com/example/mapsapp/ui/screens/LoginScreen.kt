@@ -37,61 +37,57 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
     // Navegar si login fue exitoso
     if (authState == AuthState.Authenticated) {
         onLoginSuccess()
-    }
-
-    if (showError) {
-        val errorMessage = (authState as AuthState.Error).message
-        if (errorMessage!!.contains("invalid_credentials")) {
-            Toast.makeText(context, "Invalid credentials", Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(context, "An error has ocurred", Toast.LENGTH_LONG).show()
-        }
-        viewModel.errorMessageShowed()
-    }
-
-
-
-    // UI
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Login", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { viewModel.editEmail(it) },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { viewModel.editPassword(it) },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = { viewModel.signIn() },
-            modifier = Modifier.fillMaxWidth()
+    }else{
+        // UI
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Sign In")
-        }
+            Text("Login", style = MaterialTheme.typography.headlineMedium)
+            if (showError) {
+                val errorMessage = (authState as AuthState.Error).message
+                if (errorMessage.contains("invalid_credentials")) {
+                    Toast.makeText(context, "Invalid credentials", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(context, "An error has ocurred", Toast.LENGTH_LONG).show()
+                }
+                viewModel.errorMessageShowed()
+            }
+            Spacer(modifier = Modifier.height(20.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = email,
+                onValueChange = { viewModel.editEmail(it) },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        TextButton(onClick = onRegisterClick) {
-            Text("Don't have an account? Register")
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { viewModel.editPassword(it) },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = { viewModel.signIn() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Sign In")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextButton(onClick = onRegisterClick) {
+                Text("Don't have an account? Register")
+            }
         }
     }
 }
