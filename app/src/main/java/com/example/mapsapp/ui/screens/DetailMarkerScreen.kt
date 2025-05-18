@@ -1,5 +1,6 @@
 package com.example.mapsapp.ui.screens
 
+
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Build
@@ -14,18 +15,25 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.example.mapsapp.viewmodels.SupaBaseViewModel
+
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -74,26 +82,54 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
         Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TextField(
+        Spacer(modifier = Modifier.height(120.dp))
+        Text(
+            text = "Detalles",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(50.dp))
+
+
+        OutlinedTextField(
             value = marcadorTitulo,
             onValueChange = { myViewModel.editMarcadorTitulo(it) },
-            label = { Text("Título") }
-        )
-        TextField(
-            value = marcadorDescripcion,
-            onValueChange = { myViewModel.editMarcadorDescripcion(it) },
-            label = { Text("Descripción") }
+            label = { Text("Título") },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF34A853),
+                unfocusedBorderColor = Color.Gray,
+                cursorColor = Color(0xFF34A853),
+                focusedLabelColor =Color(0xFF34A853),
+                unfocusedLabelColor = Color.Gray
+            )
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+
+
+
+        Spacer(modifier = Modifier.height(24.dp))
+        OutlinedTextField(
+            value = marcadorTitulo,
+            onValueChange = { myViewModel.editMarcadorDescripcion(it) },
+            label = { Text("Descripción") },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF34A853),
+                unfocusedBorderColor = Color.Gray,
+                cursorColor = Color(0xFF34A853),
+                focusedLabelColor =Color(0xFF34A853),
+                unfocusedLabelColor = Color.Gray
+            )
+        )
+
+        Spacer(modifier = Modifier.height(30.dp))
 
         val fotoBitmap = marcadorFotoBitmap
 
         if (fotoBitmap != null) {
-            // Локальный Bitmap - сразу показываем
             Image(
                 bitmap = fotoBitmap.asImageBitmap(),
                 contentDescription = "Foto seleccionada",
@@ -106,7 +142,14 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { showImagePicker = true }) {
+                Button(
+                    onClick = { showImagePicker = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF34A853),
+                        contentColor = Color.White
+                    )
+
+                ) {
                     Text("Actualizar Imagen")
                 }
                 Button(onClick = {
@@ -114,13 +157,16 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
                     myViewModel.editMarcadorFoto("")
                     Toast.makeText(context, "Imagen eliminada", Toast.LENGTH_SHORT).show()
                     Toast.makeText(context, "Para confirmar los cambios, presiona el botón 'Update'", Toast.LENGTH_LONG).show()
-                }) {
+                },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF34A853),
+                        contentColor = Color.White
+                    )) {
                     Text("Eliminar Imagen")
                 }
             }
 
         } else if (!marcadorFoto.isNullOrEmpty()) {
-            // Сетевой URL - показываем с лоадером
             var isLoading by remember { mutableStateOf(true) }
             val painter = rememberAsyncImagePainter(
                 model = marcadorFoto,
@@ -156,7 +202,11 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { showImagePicker = true }) {
+                Button(onClick = { showImagePicker = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF34A853),
+                        contentColor = Color.White
+                    )) {
                     Text("Actualizar Imagen")
                 }
                 Button(onClick = {
@@ -165,17 +215,26 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
                     Toast.makeText(context, "Imagen eliminada", Toast.LENGTH_SHORT).show()
                     Toast.makeText(context, "Para confirmar los cambios, presiona el botón 'Update'", Toast.LENGTH_LONG).show()
 
-                }) {
+                },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF34A853),
+                        contentColor = Color.White
+                    )) {
                     Text("Eliminar Imagen")
                 }
             }
 
         } else {
-            Text("No hay foto")
+            Spacer(modifier = Modifier.height(10.dp))
+            Text("No hay foto", fontSize = 22.sp)
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            Button(onClick = { showImagePicker = true }) {
+            Button(onClick = { showImagePicker = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF34A853),
+                    contentColor = Color.White
+                )) {
                 Text("Agregar Foto")
             }
         }
@@ -191,7 +250,11 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
             )
             Toast.makeText(context, "Marcador actualizado", Toast.LENGTH_SHORT).show()
             navigateBack()
-        }) {
+        },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF34A853),
+                contentColor = Color.White
+            )) {
             Text("Update")
         }
     }
@@ -205,13 +268,22 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
                     Button(onClick = {
                         cameraLauncher.launch(null)
                         showImagePicker = false
-                    }) {
+                    },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF34A853),
+                            contentColor = Color.White
+                        )) {
                         Text("Tomar Foto")
                     }
                     Button(onClick = {
                         galleryLauncher.launch("image/*")
                         showImagePicker = false
-                    }) {
+                    },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF34A853),
+                            contentColor = Color.White
+                        )
+                    ) {
                         Text("Subir desde Galería")
                     }
                 }

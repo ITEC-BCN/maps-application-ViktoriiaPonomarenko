@@ -103,6 +103,8 @@ dependencies {
 
     implementation("io.github.jan-tennert.supabase:auth-kt:3.1.4")
     implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
+    implementation ("androidx.compose.material3:material3:1.0.1")
+
 }
 secrets {
     propertiesFileName = "secrets.properties"

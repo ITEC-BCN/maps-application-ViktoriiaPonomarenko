@@ -2,6 +2,7 @@ package com.example.mapsapp.ui.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -13,10 +14,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -47,7 +49,7 @@ fun DrawerScreen(onLogout: () -> Unit) {
     )
     val userEmail by authviewModel.userEmail.observeAsState("user@example.com")
 
-    // Список изображений
+
     val avatarUrls = listOf(
         "https://randomuser.me/api/portraits/men/1.jpg",
         "https://randomuser.me/api/portraits/women/2.jpg",
@@ -68,7 +70,7 @@ fun DrawerScreen(onLogout: () -> Unit) {
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    // Крестик
+
                     IconButton(
                         onClick = { scope.launch { drawerState.close() } },
                         modifier = Modifier.align(Alignment.Start)
@@ -78,15 +80,35 @@ fun DrawerScreen(onLogout: () -> Unit) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Круглая аватарка
-                    AsyncImage(
-                        model = randomAvatarUrl,
-                        contentDescription = "User Avatar",
+
+                    Box(
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
+                            .background(
+                                brush = Brush.sweepGradient(
+                                    colors = listOf(
+                                        Color(0xFF4285F4),
+                                        Color(0xFFEA4335),
+                                        Color(0xFFFBBC05),
+                                        Color(0xFF34A853),
+                                        Color(0xFF4285F4)
+                                    )
+                                )
+                            )
+                            .padding(3.dp)
                             .align(Alignment.CenterHorizontally)
-                    )
+                    ) {
+                        AsyncImage(
+                            model = randomAvatarUrl,
+                            contentDescription = "User Avatar",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape)
+                        )
+                    }
+
+
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -99,7 +121,7 @@ fun DrawerScreen(onLogout: () -> Unit) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Меню итемы
+
                     DrawerItem.entries.forEachIndexed { index, drawerItem ->
                         NavigationDrawerItem(
                             icon = {
@@ -116,20 +138,33 @@ fun DrawerScreen(onLogout: () -> Unit) {
                                     drawerState.close()
                                     navController.navigate(drawerItem.route)
                                 }
-                            }
+                            },
+                            colors = NavigationDrawerItemDefaults.colors(
+                                selectedContainerColor = Color(0xFF34A853).copy(alpha = 0.6f),
+                                selectedIconColor = Color.White,
+                                selectedTextColor = Color.White
+                            )
                         )
+
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    // Кнопка Logout
+                    // Logout
                     Button(
-                        onClick = { authviewModel.logout()
-                                  onLogout()},
-                        modifier = Modifier.fillMaxWidth()
+                        onClick = {
+                            authviewModel.logout()
+                            onLogout()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF34A853).copy(alpha = 0.8f),
+                            contentColor = Color.White
+                        )
                     ) {
-                        Text("Logout")
+                        Text("Cerrar sesión")
                     }
+
                 }
             }
         },
@@ -138,8 +173,13 @@ fun DrawerScreen(onLogout: () -> Unit) {
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text("") },
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            text = "Maps App",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")

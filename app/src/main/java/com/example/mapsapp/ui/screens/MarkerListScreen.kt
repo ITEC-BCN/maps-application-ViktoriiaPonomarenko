@@ -1,7 +1,5 @@
 package com.example.mapsapp.ui.screens
 
-
-
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
@@ -25,90 +24,102 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mapsapp.data.Marcador
 import com.example.mapsapp.viewmodels.SupaBaseViewModel
 
-
 @Composable
-fun MarkerListScreen(navigateToDetail: (String) -> Unit) {
-    val myViewModel = viewModel<SupaBaseViewModel>()
-    val marcadorList by myViewModel.marcadorList.observeAsState(emptyList<Marcador>())
-    myViewModel.getAllMarcadores()
-    val marcadorTitulo: String by myViewModel.marcadorTitulo.observeAsState("")
-
+fun MarkerListScreen(navegarADetalle: (String) -> Unit) {
+    val miViewModel = viewModel<SupaBaseViewModel>()
+    val listaMarcadores by miViewModel.marcadorList.observeAsState(emptyList<Marcador>())
+    miViewModel.getAllMarcadores()
 
     Column(
-        Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Spacer(modifier = Modifier.height(100.dp))
         Text(
-            "Marker List",
+            "Lista de Marcadores",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
+        Spacer(modifier = Modifier.height(20.dp))
         LazyColumn(
-            Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(items = marcadorList, key = { it.id!! }) { marcador ->
-                val context = LocalContext.current
-                val dissmissState = rememberSwipeToDismissBoxState(
+            items(items = listaMarcadores, key = { it.id!! }) { marcador ->
+                val contexto = LocalContext.current
+                val estadoDismiss = rememberSwipeToDismissBoxState(
                     confirmValueChange = {
                         if (it == SwipeToDismissBoxValue.EndToStart) {
-                            myViewModel.deleteMarcador(marcador.id.toString())
-                            Toast.makeText(context, "Marcador eliminado", Toast.LENGTH_SHORT).show()
+                            miViewModel.deleteMarcador(marcador.id.toString())
+                            Toast.makeText(contexto, "Marcador eliminado", Toast.LENGTH_SHORT).show()
                             true
                         } else {
                             false
                         }
                     }
                 )
-                SwipeToDismissBox(state = dissmissState, backgroundContent = {
-                    Box(
-                        Modifier
-                            .fillMaxSize()
-                            .background(Color.Red)
-                            .padding(horizontal = 20.dp),
-                        contentAlignment = Alignment.BottomEnd
-                    ) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
-
+                val forma = RoundedCornerShape(12.dp)
+                SwipeToDismissBox(
+                    state = estadoDismiss,
+                    backgroundContent = {
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .clip(forma)
+                                .background(Color.Red)
+                                .padding(horizontal = 20.dp),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
+                        }
                     }
-                }) {
-                    MarcadorItem(marcador) { navigateToDetail(marcador.id.toString()) }
+                ) {
+                    ItemMarcador(marcador) { navegarADetalle(marcador.id.toString()) }
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun MarcadorItem(marcador: Marcador, navigateToDetail: (String) -> Unit) {
+fun ItemMarcador(marcador: Marcador, navegarADetalle: (String) -> Unit) {
+    val forma = RoundedCornerShape(12.dp)
     Box(
         modifier = Modifier
-            .fillMaxWidth().background(Color.LightGray).border(width = 2.dp, Color.DarkGray)
-            .clickable { navigateToDetail(marcador.id.toString()) }) {
+            .fillMaxWidth(0.66f)
+            .background(Color.White, forma)
+            .border(width = 2.dp, color = Color(0xFF34A853), shape = forma)
+            .clickable { navegarADetalle(marcador.id.toString()) }
+            .padding(16.dp)
+    ) {
         Row(
-            Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(marcador.titulo, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-
+            Text(
+                text = marcador.titulo,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
         }
     }
 }

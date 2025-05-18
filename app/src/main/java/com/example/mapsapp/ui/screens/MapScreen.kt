@@ -1,7 +1,5 @@
 package com.example.mapsapp.ui.screens
 
-
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,7 +44,7 @@ fun MapScreen(navController: NavHostController, modifier: Modifier = Modifier) {
             Marker(
                 state = MarkerState(position = LatLng(marcador.latitud, marcador.longitud)),
                 title = marcador.titulo,
-                snippet = "More details",
+                snippet = "Más detalles",
                 onInfoWindowClick = {
                     navController.navigate(MarkerDatails(marcador.id.toString()))
                 }

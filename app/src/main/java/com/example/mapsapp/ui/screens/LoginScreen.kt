@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.mapsapp.ui.navigation.Destination.Register
 
@@ -34,7 +35,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
     val email by viewModel.email.observeAsState("")
     val password by viewModel.password.observeAsState("")
 
-    // Навигация при успешном входе
     if (authState == AuthState.Authenticated) {
         onLoginSuccess()
     } else {
@@ -86,7 +86,14 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
                 onValueChange = { viewModel.editEmail(it) },
                 label = { Text("Correo electrónico") },
                 placeholder = { Text("ejemplo@gmail.com") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF34A853),
+                    unfocusedBorderColor = Color.Gray,
+                    cursorColor = Color(0xFF34A853),
+                    focusedLabelColor =Color(0xFF34A853),
+                    unfocusedLabelColor = Color.Gray
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -96,23 +103,40 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
                 onValueChange = { viewModel.editPassword(it) },
                 label = { Text("Contraseña") },
                 placeholder = { Text("123456") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF34A853),
+                    unfocusedBorderColor = Color.Gray,
+                    cursorColor = Color(0xFF34A853),
+                    focusedLabelColor =Color(0xFF34A853),
+                    unfocusedLabelColor = Color.Gray
+                )
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = { validateAndLogin() },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF34A853),
+                    contentColor = Color.White
+                )
             ) {
                 Text("Entrar")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextButton(onClick = onRegisterClick) {
+            TextButton(
+                onClick = onRegisterClick,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = Color(0xFF34A853)
+                )
+            ) {
                 Text("¿No tienes una cuenta? Regístrate")
             }
+
         }
     }
 }

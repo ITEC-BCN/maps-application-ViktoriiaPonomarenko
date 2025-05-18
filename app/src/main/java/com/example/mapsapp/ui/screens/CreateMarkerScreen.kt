@@ -15,8 +15,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -81,7 +83,14 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
                 onValueChange = { titulo = it },
                 label = { Text("Título") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF34A853),
+                    unfocusedBorderColor = Color.Gray,
+                    cursorColor = Color(0xFF34A853),
+                    focusedLabelColor =Color(0xFF34A853),
+                    unfocusedLabelColor = Color.Gray
+                )
             )
 
             OutlinedTextField(
@@ -89,7 +98,14 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
                 onValueChange = { descripcion = it },
                 label = { Text("Descripción") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF34A853),
+                    unfocusedBorderColor = Color.Gray,
+                    cursorColor = Color(0xFF34A853),
+                    focusedLabelColor =Color(0xFF34A853),
+                    unfocusedLabelColor = Color.Gray
+                )
             )
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -100,7 +116,11 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
                         takePictureLauncher.launch(uri!!)
                     },
                     enabled = !isLoading,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF34A853),
+                        contentColor = Color.White
+                    )
                 ) {
                     Text("Tomar Foto")
                 }
@@ -110,9 +130,13 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
                         pickImageLauncher.launch("image/*")
                     },
                     enabled = !isLoading,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF34A853),
+                        contentColor = Color.White
+                    )
                 ) {
-                    Text("Elegir de Galería")
+                    Text("De Galería")
                 }
             }
 
@@ -129,7 +153,6 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
                             latitud = latitude,
                             longitud = longitude
                         ) {
-                            // callback после вставки маркера
                             isLoading = false
                             Toast.makeText(context, "Marcador creado", Toast.LENGTH_SHORT).show()
                             insertado = true
@@ -137,7 +160,11 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
                     }
                 },
                 enabled = !isLoading,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF34A853),
+                    contentColor = Color.White
+                )
             ) {
                 Text("Insertar marcador")
             }
@@ -153,7 +180,6 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
                 )
             }
 
-            // Навигация при успешной вставке
             if (insertado) {
                 LaunchedEffect(Unit) {
                     navController.navigate(Destination.Map) {
@@ -163,13 +189,13 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
             }
         }
 
-        // Затемнённый фон с прогрессом и текстом при загрузке
+
         if (isLoading) {
             Box(
                 Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.8f))
-                    .clickable(enabled = false) {} // блокируем нажатия
+                    .clickable(enabled = false) {}
             ) {
                 Column(
                     Modifier.align(Alignment.Center),

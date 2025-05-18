@@ -3,9 +3,7 @@ package com.example.mapsapp.data
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.mapsapp.BuildConfig
-import com.example.mapsapp.SupabaseApplication.Companion.supabase
 import com.example.mapsapp.utils.AuthState
-import com.google.android.gms.maps.model.LatLng
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
@@ -121,8 +119,4 @@ class MySupabaseClient {
             return AuthState.Error(e.localizedMessage)
         }
     }
-
-
-
-
 }
