@@ -1,12 +1,10 @@
 package com.example.mapsapp.ui.screens
 
-
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -25,7 +23,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.example.mapsapp.viewmodels.SupaBaseViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -48,6 +47,8 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
         onResult = { bitmap ->
             if (bitmap != null) {
                 myViewModel.editMarcadorFotoBitmap(bitmap)
+                Toast.makeText(context, "Foto tomada con éxito", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Para confirmar los cambios, presiona el botón 'Update'", Toast.LENGTH_LONG).show()
             }
         }
     )
@@ -63,11 +64,11 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
                     ImageDecoder.decodeBitmap(source)
                 }
                 myViewModel.editMarcadorFotoBitmap(bitmap)
+                Toast.makeText(context, "Imagen cargada desde la galería", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Para confirmar los cambios, presiona el botón 'Update'", Toast.LENGTH_LONG).show()
             }
         }
     )
-
-
 
     Column(
         Modifier
@@ -87,22 +88,99 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
             label = { Text("Descripción") }
         )
 
-        if (marcadorFoto.isNullOrEmpty()) {
-            Text("No hay foto")
-        } else {
-            AsyncImage(
-                model = marcadorFoto,
-                contentDescription = "Foto del marcador",
+        Spacer(modifier = Modifier.height(16.dp))
+
+        val fotoBitmap = marcadorFotoBitmap
+
+        if (fotoBitmap != null) {
+            // Локальный Bitmap - сразу показываем
+            Image(
+                bitmap = fotoBitmap.asImageBitmap(),
+                contentDescription = "Foto seleccionada",
                 modifier = Modifier
                     .size(200.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .combinedClickable(
-                        onClick = {},
-                        onLongClick = { showImagePicker = true }
-                    )
+                    .combinedClickable(onClick = {})
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { showImagePicker = true }) {
+                    Text("Actualizar Imagen")
+                }
+                Button(onClick = {
+                    myViewModel.editMarcadorFotoBitmap(null)
+                    myViewModel.editMarcadorFoto("")
+                    Toast.makeText(context, "Imagen eliminada", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Para confirmar los cambios, presiona el botón 'Update'", Toast.LENGTH_LONG).show()
+                }) {
+                    Text("Eliminar Imagen")
+                }
+            }
+
+        } else if (!marcadorFoto.isNullOrEmpty()) {
+            // Сетевой URL - показываем с лоадером
+            var isLoading by remember { mutableStateOf(true) }
+            val painter = rememberAsyncImagePainter(
+                model = marcadorFoto,
+                onState = { state ->
+                    isLoading = when (state) {
+                        is AsyncImagePainter.State.Loading -> true
+                        is AsyncImagePainter.State.Success,
+                        is AsyncImagePainter.State.Error,
+                        is AsyncImagePainter.State.Empty -> false
+                        else -> false
+                    }
+                }
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .combinedClickable(onClick = {}),
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.foundation.Image(
+                    painter = painter,
+                    contentDescription = "Foto del marcador",
+                    modifier = Modifier.matchParentSize()
+                )
+
+                if (isLoading) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { showImagePicker = true }) {
+                    Text("Actualizar Imagen")
+                }
+                Button(onClick = {
+                    myViewModel.editMarcadorFotoBitmap(null)
+                    myViewModel.editMarcadorFoto("")
+                    Toast.makeText(context, "Imagen eliminada", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Para confirmar los cambios, presiona el botón 'Update'", Toast.LENGTH_LONG).show()
+
+                }) {
+                    Text("Eliminar Imagen")
+                }
+            }
+
+        } else {
+            Text("No hay foto")
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(onClick = { showImagePicker = true }) {
+                Text("Agregar Foto")
+            }
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
             myViewModel.updateMarcador(
@@ -111,6 +189,7 @@ fun DetailMarkerScreen(marcadorId: String, navigateBack: () -> Unit) {
                 descripcion = marcadorDescripcion,
                 fotoBitmap = marcadorFotoBitmap
             )
+            Toast.makeText(context, "Marcador actualizado", Toast.LENGTH_SHORT).show()
             navigateBack()
         }) {
             Text("Update")

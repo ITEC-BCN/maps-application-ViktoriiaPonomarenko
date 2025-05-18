@@ -1,5 +1,6 @@
 package com.example.mapsapp.viewmodels
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,17 +23,29 @@ class AuthViewModel(private val sharedPreferences: SharedPreferencesHelper) : Vi
     private val _user = MutableLiveData<String?>()
     val user = _user
 
+    private val _userEmail = MutableLiveData<String?>()
+    val userEmail: LiveData<String?> = _userEmail
+
+
+
+
+
     private fun checkExistingSession() {
         viewModelScope.launch {
             val accessToken = sharedPreferences.getAccessToken()
             val refreshToken = sharedPreferences.getRefreshToken()
-            when {
-                !accessToken.isNullOrEmpty() -> refreshToken()
-                !refreshToken.isNullOrEmpty() -> refreshToken()
-                else -> _authState.value = AuthState.Unauthenticated
+            if (!accessToken.isNullOrEmpty() || !refreshToken.isNullOrEmpty()) {
+                authManager.refreshSession()
+                val session = authManager.retrieveCurrentSession()
+                _userEmail.value = session?.user?.email
+                _authState.value = AuthState.Authenticated
+            } else {
+                _authState.value = AuthState.Unauthenticated
+                _userEmail.value = null
             }
         }
     }
+
     init {
         checkExistingSession()
     }
@@ -49,20 +62,8 @@ class AuthViewModel(private val sharedPreferences: SharedPreferencesHelper) : Vi
     fun errorMessageShowed(){
         _showError.value = false
     }
-    fun signUp() {
-        viewModelScope.launch {
-            _authState.value = authManager.signUpWithEmail(_email.value!!, _password.value!!)
-            if (_authState.value is AuthState.Error) {
-                _showError.value = true
-            } else {
-                val session = authManager.retrieveCurrentSession()
-                sharedPreferences.saveAuthData(
-                    session!!.accessToken,
-                    session.refreshToken
-                )
-            }
-        }
-    }
+
+
     fun signIn() {
         viewModelScope.launch {
             _authState.value = authManager.signInWithEmail(_email.value!!, _password.value!!)
@@ -74,9 +75,27 @@ class AuthViewModel(private val sharedPreferences: SharedPreferencesHelper) : Vi
                     session!!.accessToken,
                     session.refreshToken
                 )
+                _userEmail.value = session.user?.email
             }
         }
     }
+
+    fun signUp() {
+        viewModelScope.launch {
+            _authState.value = authManager.signUpWithEmail(_email.value!!, _password.value!!)
+            if (_authState.value is AuthState.Error) {
+                _showError.value = true
+            } else {
+                val session = authManager.retrieveCurrentSession()
+                sharedPreferences.saveAuthData(
+                    session!!.accessToken,
+                    session.refreshToken
+                )
+                _userEmail.value = session.user?.email
+            }
+        }
+    }
+
 
     private fun refreshToken() {
         viewModelScope.launch {

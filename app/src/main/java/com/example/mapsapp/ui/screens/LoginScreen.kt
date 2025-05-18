@@ -34,10 +34,41 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
     val email by viewModel.email.observeAsState("")
     val password by viewModel.password.observeAsState("")
 
-    // Navegar si login fue exitoso
+    // Навигация при успешном входе
     if (authState == AuthState.Authenticated) {
         onLoginSuccess()
-    }else{
+    } else {
+        if (showError) {
+            val errorMessage = (authState as? AuthState.Error)?.message ?: ""
+            if (errorMessage.contains("invalid_credentials")) {
+                Toast.makeText(context, "Credenciales inválidas", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(context, "Ha ocurrido un error", Toast.LENGTH_LONG).show()
+            }
+            viewModel.errorMessageShowed()
+        }
+
+        fun isEmailValid(email: String): Boolean {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        }
+
+        fun validateAndLogin() {
+            when {
+                email.isBlank() || password.isBlank() -> {
+                    Toast.makeText(context, "Correo y contraseña son obligatorios", Toast.LENGTH_LONG).show()
+                }
+                !isEmailValid(email) -> {
+                    Toast.makeText(context, "Correo inválido", Toast.LENGTH_LONG).show()
+                }
+                password.length < 6 -> {
+                    Toast.makeText(context, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_LONG).show()
+                }
+                else -> {
+                    viewModel.signIn()
+                }
+            }
+        }
+
         // UI
         Column(
             modifier = Modifier
@@ -46,22 +77,15 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Login", style = MaterialTheme.typography.headlineMedium)
-            if (showError) {
-                val errorMessage = (authState as AuthState.Error).message
-                if (errorMessage.contains("invalid_credentials")) {
-                    Toast.makeText(context, "Invalid credentials", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(context, "An error has ocurred", Toast.LENGTH_LONG).show()
-                }
-                viewModel.errorMessageShowed()
-            }
+            Text("Iniciar sesión", style = MaterialTheme.typography.headlineMedium)
+
             Spacer(modifier = Modifier.height(20.dp))
 
             OutlinedTextField(
                 value = email,
                 onValueChange = { viewModel.editEmail(it) },
-                label = { Text("Email") },
+                label = { Text("Correo electrónico") },
+                placeholder = { Text("ejemplo@gmail.com") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -70,25 +94,25 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
             OutlinedTextField(
                 value = password,
                 onValueChange = { viewModel.editPassword(it) },
-                label = { Text("Password") },
+                label = { Text("Contraseña") },
+                placeholder = { Text("123456") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { viewModel.signIn() },
+                onClick = { validateAndLogin() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Sign In")
+                Text("Entrar")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             TextButton(onClick = onRegisterClick) {
-                Text("Don't have an account? Register")
+                Text("¿No tienes una cuenta? Regístrate")
             }
         }
     }
 }
-

@@ -2,6 +2,7 @@ package com.example.mapsapp.ui.screens
 
 
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,6 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,10 +64,12 @@ fun MarkerListScreen(navigateToDetail: (String) -> Unit) {
                 .fillMaxWidth()
         ) {
             items(items = marcadorList, key = { it.id!! }) { marcador ->
+                val context = LocalContext.current
                 val dissmissState = rememberSwipeToDismissBoxState(
                     confirmValueChange = {
                         if (it == SwipeToDismissBoxValue.EndToStart) {
                             myViewModel.deleteMarcador(marcador.id.toString())
+                            Toast.makeText(context, "Marcador eliminado", Toast.LENGTH_SHORT).show()
                             true
                         } else {
                             false
@@ -81,6 +85,7 @@ fun MarkerListScreen(navigateToDetail: (String) -> Unit) {
                         contentAlignment = Alignment.BottomEnd
                     ) {
                         Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
+
                     }
                 }) {
                     MarcadorItem(marcador) { navigateToDetail(marcador.id.toString()) }

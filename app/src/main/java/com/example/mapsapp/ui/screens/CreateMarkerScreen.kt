@@ -5,30 +5,24 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -36,13 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
-import androidx.core.graphics.scale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.mapsapp.ui.navigation.Destination
 import com.example.mapsapp.viewmodels.SupaBaseViewModel
 import java.io.File
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -51,6 +43,7 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
     var titulo by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
     var insertado by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val imageUri = remember { mutableStateOf<Uri?>(null) }
@@ -73,117 +66,128 @@ fun CreateMarkerScreen(latitude: Double, longitude: Double, navController: NavHo
             }
         }
 
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 150.dp, bottom = 100.dp, start = 20.dp, end = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            Text("Crear nuevo marcador", fontSize = 24.sp, fontWeight = FontWeight.Bold)
 
-//    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success -> if (success && imageUri != null) {
-//            val stream = context.contentResolver.openInputStream(imageUri as Uri)
-//            stream?.use { // Decodificar el flujo a un Bitmap
-//                val originalBitmap = BitmapFactory.decodeStream(it)
-//
-//// Obtener las dimensiones originales de la imagen
-//                val originalWidth = originalBitmap.width
-//                val originalHeight = originalBitmap.height // Definir el aspect ratio (relación entre ancho y alto)
-//                val aspectRatio = originalWidth.toFloat() / originalHeight.toFloat()
-//
-//// Establecer el tamaño máximo que deseas para la imagen (por ejemplo, un ancho máximo)
-//                val maxWidth = 800 // Puedes establecer el valor que prefieras // Calcular el nuevo ancho y alto manteniendo el aspect ratio
-//                val newWidth = maxWidth
-//                val newHeight = (newWidth / aspectRatio).toInt()
-//
-//// Redimensionar el bitmap mientras se mantiene el aspect ratio
-//                val resizedBitmap = originalBitmap.scale(newWidth, newHeight)
-//
-//// Establecer el Bitmap redimensionado en el ViewModel appViewModel.setImagenBitMap(resizedBitmap)
-//            } ?: run { Log.e("TakePicture", "Error al abrir InputStream para la URI de la imagen.")
-//            } } else {
-//            Log.e("TakePicture", "La imagen no fue tomada o la URI de la imagen es nula.")
-//        }
-//        }
+            OutlinedTextField(
+                value = titulo,
+                onValueChange = { titulo = it },
+                label = { Text("Título") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
+            )
 
+            OutlinedTextField(
+                value = descripcion,
+                onValueChange = { descripcion = it },
+                label = { Text("Descripción") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
+            )
 
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Button(
+                    onClick = {
+                        val uri = createImageUri(context)
+                        imageUri.value = uri
+                        takePictureLauncher.launch(uri!!)
+                    },
+                    enabled = !isLoading,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Tomar Foto")
+                }
 
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(top = 150.dp, bottom = 100.dp, start = 20.dp, end = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        Text("Crear nuevo marcador", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-
-        OutlinedTextField(
-            value = titulo,
-            onValueChange = { titulo = it },
-            label = { Text("Título") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = descripcion,
-            onValueChange = { descripcion = it },
-            label = { Text("Descripción") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Row(Modifier .fillMaxWidth()) {
-            Button(onClick = {
-                val uri = createImageUri(context)
-                imageUri.value = uri
-                takePictureLauncher                                                  .launch(uri!!)
-            }
-            ) {
-                Text("Tomar Foto")
+                Button(
+                    onClick = {
+                        pickImageLauncher.launch("image/*")
+                    },
+                    enabled = !isLoading,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Elegir de Galería")
+                }
             }
 
             Button(
                 onClick = {
-                    pickImageLauncher.launch("image/*")
-                }
+                    if (titulo.isBlank()) {
+                        Toast.makeText(context, "El título no puede estar vacío", Toast.LENGTH_LONG).show()
+                    } else {
+                        isLoading = true
+                        myViewModel.insertNewMarcador(
+                            titulo = titulo,
+                            descripcion = descripcion,
+                            foto = bitmap.value,
+                            latitud = latitude,
+                            longitud = longitude
+                        ) {
+                            // callback после вставки маркера
+                            isLoading = false
+                            Toast.makeText(context, "Marcador creado", Toast.LENGTH_SHORT).show()
+                            insertado = true
+                        }
+                    }
+                },
+                enabled = !isLoading,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Elegir de Galería")
+                Text("Insertar marcador")
+            }
+
+            bitmap.value?.let {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .clip(RoundedCornerShape(16.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            // Навигация при успешной вставке
+            if (insertado) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(Destination.Map) {
+                        popUpTo<Destination.Map> { inclusive = false }
+                    }
+                }
             }
         }
 
-
-        Button(
-            onClick = {
-                if (titulo.isNotBlank()) {
-                    myViewModel.insertNewMarcador(
-                        titulo = titulo,
-                        descripcion = descripcion, // puede estar vacío
-                        foto = bitmap.value, // puede ser null
-                        latitud = latitude,
-                        longitud = longitude
+        // Затемнённый фон с прогрессом и текстом при загрузке
+        if (isLoading) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.8f))
+                    .clickable(enabled = false) {} // блокируем нажатия
+            ) {
+                Column(
+                    Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(color = Color.White)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        "Agregando marcador...",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
                     )
-                    insertado = true
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Insertar marcador")
-        }
-
-        bitmap.value?.let {
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(300.dp)
-                    .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        // Navegar tras insertar
-        if (insertado) {
-            LaunchedEffect(Unit) {
-                navController.navigate(Destination.Map) {
-                    popUpTo<Destination.Map>() { inclusive = false }
                 }
             }
         }
     }
 }
-
 
 fun createImageUri(context: Context): Uri? {
     val file = File.createTempFile("temp_image_", ".jpg", context.cacheDir).apply {

@@ -81,12 +81,6 @@ class MySupabaseClient {
 
 
 
-//    suspend fun deleteImage(imageName: String) {
-//        val imgName =
-//            imageName.removePrefix("https://ymqpurclsevkorrvtglt.supabase.co/storage/v1/object/public/images/")
-//        client.storage.from("images").delete(imgName)
-//    }
-
     fun buildImageUrl(imageFileName: String) = "${this.supabaseUrl}/storage/v1/object/public/images/${imageFileName}"
 
 
@@ -127,6 +121,7 @@ class MySupabaseClient {
             return AuthState.Error(e.localizedMessage)
         }
     }
+
 
 
 

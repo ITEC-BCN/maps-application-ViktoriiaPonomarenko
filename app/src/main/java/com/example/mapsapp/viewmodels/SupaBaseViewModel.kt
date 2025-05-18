@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.SupabaseApplication
 import com.example.mapsapp.data.Marcador
+import com.example.mapsapp.data.MySupabaseClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +42,7 @@ class SupaBaseViewModel(): ViewModel() {
     private val _marcadorFotoBitmap = MutableLiveData<Bitmap?>()
     val marcadorFotoBitmap = _marcadorFotoBitmap
 
-    fun editMarcadorFotoBitmap(bitmap: Bitmap) {
+    fun editMarcadorFotoBitmap(bitmap: Bitmap?) {
         _marcadorFotoBitmap.postValue(bitmap)
     }
 
@@ -54,22 +55,20 @@ class SupaBaseViewModel(): ViewModel() {
         }
     }
 
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    fun insertNewMarcador(titulo: String, descripcion: String, foto: Bitmap?, latitud: Double, longitud: Double) {
-//        val stream = ByteArrayOutputStream()
-//        foto?.compress(Bitmap.CompressFormat.PNG, 0, stream)
-//        CoroutineScope(Dispatchers.IO).launch {
-//
-//            val imageName = database.uploadImage(stream.toByteArray())
-//            val newMarcador = Marcador(titulo = titulo, descripcion = descripcion, foto = imageName, latitud = latitud, longitud = longitud)
-//            database.insertMarcador(newMarcador)
-//        }
-//    }
+
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun insertNewMarcador(titulo: String, descripcion: String, foto: Bitmap?, latitud: Double, longitud: Double) {
+    fun insertNewMarcador(
+        titulo: String,
+        descripcion: String,
+        foto: Bitmap?,
+        latitud: Double,
+        longitud: Double,
+        onComplete: () -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
-            // Si hay foto, súbela. Si no, usa string vacío.
             val fotoUrl = if (foto != null) {
                 val stream = ByteArrayOutputStream()
                 foto.compress(Bitmap.CompressFormat.PNG, 100, stream)
@@ -87,9 +86,17 @@ class SupaBaseViewModel(): ViewModel() {
             )
 
             database.insertMarcador(nuevoMarcador)
-            getAllMarcadores() // opcional si quieres actualizar la lista
+            getAllMarcadores()
+
+            withContext(Dispatchers.Main) {
+                onComplete()
+            }
         }
     }
+
+
+
+
 
 
 
@@ -150,6 +157,7 @@ class SupaBaseViewModel(): ViewModel() {
     fun editMarcadorFoto(foto: String) {
         _marcadorFoto.value = foto
     }
+
 
 
 }

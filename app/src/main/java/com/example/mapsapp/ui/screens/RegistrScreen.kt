@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+
 @Composable
 fun RegistrScreen(onRegisterSuccess: () -> Unit) {
     val context = LocalContext.current
@@ -30,22 +31,40 @@ fun RegistrScreen(onRegisterSuccess: () -> Unit) {
     val email by viewModel.email.observeAsState("")
     val password by viewModel.password.observeAsState("")
 
-    if(authState == AuthState.Authenticated){
+    if (authState == AuthState.Authenticated) {
         onRegisterSuccess()
-    }
-    else{
+    } else {
         if (showError) {
-            val errorMessage = (authState as AuthState.Error).message
-            if (errorMessage!!.contains("invalid_credentials")) {
-                Toast.makeText(context, "Invalid credentials", Toast.LENGTH_LONG).show()
+            val errorMessage = (authState as? AuthState.Error)?.message ?: ""
+            if (errorMessage.contains("invalid_credentials")) {
+                Toast.makeText(context, "Credenciales inválidas", Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(context, "An error has ocurred", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Ha ocurrido un error", Toast.LENGTH_LONG).show()
             }
             viewModel.errorMessageShowed()
         }
-
     }
 
+    fun isEmailValid(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    fun validateAndRegister() {
+        when {
+            email.isBlank() || password.isBlank() -> {
+                Toast.makeText(context, "El correo y la contraseña son obligatorios", Toast.LENGTH_LONG).show()
+            }
+            !isEmailValid(email) -> {
+                Toast.makeText(context, "Correo inválido", Toast.LENGTH_LONG).show()
+            }
+            password.length < 6 -> {
+                Toast.makeText(context, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_LONG).show()
+            }
+            else -> {
+                viewModel.signUp()
+            }
+        }
+    }
 
     // UI
     Column(
@@ -55,14 +74,15 @@ fun RegistrScreen(onRegisterSuccess: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Register", style = MaterialTheme.typography.headlineMedium)
+        Text("Registro", style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedTextField(
             value = email,
             onValueChange = { viewModel.editEmail(it) },
-            label = { Text("Email") },
+            label = { Text("Correo electrónico") },
+            placeholder = { Text("ejemplo@gmail.com") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -71,18 +91,18 @@ fun RegistrScreen(onRegisterSuccess: () -> Unit) {
         OutlinedTextField(
             value = password,
             onValueChange = { viewModel.editPassword(it) },
-            label = { Text("Password") },
+            label = { Text("Contraseña") },
+            placeholder = { Text("123456") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { viewModel.signUp() },
+            onClick = { validateAndRegister() },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Sign Up")
+            Text("Registrarse")
         }
-
     }
 }
